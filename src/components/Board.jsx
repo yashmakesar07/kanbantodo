@@ -1,34 +1,29 @@
 import { Container } from "@mui/material";
 import React from "react";
 import Column from "./Column";
+import { useSelector } from "react-redux";
 
 const Board = () => {
-  const data = {
-    columns: [
-      { id: 1, title: "TO-DO", tasks: [] },
-      { id: 2, title: "In Progress", tasks: [] },
-      { id: 3, title: "Completed", tasks: [] },
-      { id: 4, title: "Deleted", tasks: [] }
-    ]
-  };
+  const columns = useSelector((state) => state.todo.columns); // get from redux
 
   return (
     <Container
       sx={{
         backgroundColor: "grey",
-        height: "600px",
+        height: "700px",
         p: "10px",
-        width: "100%",
+        width: "1200px",
         display: "flex",
         flexDirection: "row",
         gap: "5px",
+        overflow: "scroll",
         borderRadius: 2,
       }}
       disableGutters
       fixed
     >
-      {data.columns.map((column) => (
-        <Column key={column.id} name={column.title} tasks={column.tasks} />
+      {Object.entries(columns).map(([name, tasks]) => (
+        <Column key={name} name={name} tasks={tasks} />
       ))}
     </Container>
   );

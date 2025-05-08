@@ -1,22 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { nanoid } from "@reduxjs/toolkit";
+import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 const initialState = {
   columns: {
-    "TO-DO": [
-      { id: nanoid(), title: "Task 1" },
-      { id: nanoid(), title: "Task 2" }
-    ],
-    "In Progress": [
-      { id: nanoid(), title: "Task 3" },
-      { id: nanoid(), title: "Task 4" }
-    ],
-    "Completed": [
-        { id: nanoid(), title: "Task 6" }
-    ],
-    "Deleted": [
-        { id: nanoid(), title: "Task 5" },
-    ],
+    TODO: [],
+    InProgress: [],
+    Completed: [],
+    Deleted: [],
   },
 };
 
@@ -26,21 +15,35 @@ const todoSlice = createSlice({
   reducers: {
     addTask: (state, action) => {
       const { columnName, task } = action.payload;
+      console.log(action.payload);
       state.columns[columnName].push(task);
     },
     moveTask: (state, action) => {
-      const { from, to, taskId } = action.payload;
+      const { from, to, task } = action.payload;
 
-      const taskIndex = state.columns[from].findIndex((task) => task.id === taskId);
+      const taskIndex = state.columns[from].findIndex((t) => t.id === task.id);
       if (taskIndex !== -1) {
-        const [task] = state.columns[from].splice(taskIndex, 1);
-        state.columns[to].push(task);
+        const [removedTask] = state.columns[from].splice(taskIndex, 1);
+
+        if (to === "Deleted") {
+          removedTask.deletedAt = Date.now();
+        }
+        console.log(removedTask);
+        state.columns[to].push(removedTask);
       }
     },
-    //future work
+    removeTask: (state, action) => {
+      const { taskId } = action.payload;
+      console.log(taskId);
+
+      state.columns["Deleted"] = state.columns["Deleted"].filter(
+        (task) => task.id !== taskId
+      );
+      console.log("remove taks", state.columns["Deleted"]);
+    },
   },
 });
 
-export const { addTask, moveTask } = todoSlice.actions;
+export const { addTask, moveTask, removeTask } = todoSlice.actions;
 
 export default todoSlice.reducer;

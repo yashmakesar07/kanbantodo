@@ -11,45 +11,17 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { moveTask } from "../app/todoSlicers";
-
-function stringToColor(string) {
-  let hash = 0;
-  let i;
-
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  let color = '#';
-
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-
-  return color;
-}
-
-function stringAvatar(name) {
-    return {
-      sx: {
-        bgcolor: stringToColor(name),
-        height: "30px",
-        width: "30px",
-        fontSize: "15px"
-      },
-      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-    };
-}
-
-
-
+import { stringAvatar } from "./utils";
+import { users } from "../app/utils";
 const TodoCard = ({ task, currentColumn }) => {
-  const [toCol, setTocol] = useState(currentColumn);
   const dispatch = useDispatch();
   const columns = useSelector((state) => Object.keys(state.todo.columns));
+
   const [countdown, setCountdown] = useState(null);
+  const [toCol, setTocol] = useState(currentColumn);
+  const getUsername = (id) => users.find((user) => user.id === id)?.name || "Unknown User";
+  
+  
 
   const handleChange = (e) => {
     const newCol = e.target.value;
@@ -74,10 +46,12 @@ const TodoCard = ({ task, currentColumn }) => {
       sx={{
         height: "auto",
         minWidth: 250,
-        margin: "8px",
+        maxWidth: 250,
+        margin: "8px 0",
         backgroundColor: "#fff",
         borderRadius: "4px",
         boxShadow: "0 1px 3px black",
+        flexShrink: 0,
       }}
     >
       <CardContent
@@ -133,12 +107,12 @@ const TodoCard = ({ task, currentColumn }) => {
                   {col}
                 </MenuItem>
               ))}
-          </Select> 
-          <Avatar {...stringAvatar('Kent Dodds')} />
+          </Select>
+          <Avatar {...stringAvatar(getUsername(task.userId))} />
         </CardActions>
       )}
     </Card>
-  );  
+  );
 };
 
 export default TodoCard;

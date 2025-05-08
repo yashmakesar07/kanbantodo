@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { users } from "./utils";
+
 
 const initialState = {
   columns: {
@@ -15,9 +17,12 @@ const todoSlice = createSlice({
   reducers: {
     addTask: (state, action) => {
       const { columnName, task } = action.payload;
-      console.log(action.payload);
-      state.columns[columnName].push(task);
+      const randomUser = users[Math.floor(Math.random() * users.length)];
+      const newTask = { ...task, userId: randomUser.id };
+      console.log(newTask);
+      state.columns[columnName].push(newTask);
     },
+    
     moveTask: (state, action) => {
       const { from, to, task } = action.payload;
 

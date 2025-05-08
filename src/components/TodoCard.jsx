@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Children, useEffect, useState } from "react";
 import {
   Card,
   CardActions,
@@ -7,9 +7,43 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Avatar,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { moveTask } from "../app/todoSlicers";
+
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = '#';
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+
+  return color;
+}
+
+function stringAvatar(name) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+        height: "30px",
+        width: "30px",
+        fontSize: "15px"
+      },
+      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    };
+}
+
+
 
 const TodoCard = ({ task, currentColumn }) => {
   const [toCol, setTocol] = useState(currentColumn);
@@ -71,6 +105,7 @@ const TodoCard = ({ task, currentColumn }) => {
           sx={{
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
             paddingX: 2,
             paddingBottom: 2,
           }}
@@ -98,11 +133,12 @@ const TodoCard = ({ task, currentColumn }) => {
                   {col}
                 </MenuItem>
               ))}
-          </Select>
+          </Select> 
+          <Avatar {...stringAvatar('Kent Dodds')} />
         </CardActions>
       )}
     </Card>
-  );
+  );  
 };
 
 export default TodoCard;

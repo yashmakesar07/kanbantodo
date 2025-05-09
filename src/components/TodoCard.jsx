@@ -8,6 +8,7 @@ import {
   Select,
   MenuItem,
   Avatar,
+  Tooltip,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { asssigntaskTo, moveTask } from "../app/todoSlicers";
@@ -44,7 +45,7 @@ const TodoCard = ({ task, currentColumn }) => {
 
 useEffect(()=>{
 
-},[asssigntaskTo])
+},[dispatch])
 
   return (
     <Card
@@ -114,11 +115,14 @@ useEffect(()=>{
               ))}
           </Select>
           <div style={{ position: 'relative' }}>
-            <Avatar 
-              {...stringAvatar(task.assignedTo?.name)}
-              onClick={() => setShowUserDropdown(!showUserDropdown)}
-              style={{ cursor: 'pointer' }}
-            />
+            <Tooltip title="Click to Assign Task user or unassign it">
+              <Avatar 
+                {...stringAvatar(task.assignedTo?.name)}
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
+                style={{ cursor: 'pointer' }}
+              />
+            </Tooltip>
+            
             {showUserDropdown && (
               <Select
                 open={showUserDropdown}

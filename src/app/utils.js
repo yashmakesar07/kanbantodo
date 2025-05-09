@@ -2,6 +2,10 @@ import { nanoid } from "nanoid";
 
 export const users = [
   {
+    id: "unassigned",
+    name: "UnAssigned",
+  },
+  {
     id: nanoid(),
     name: "John Doe",
   },

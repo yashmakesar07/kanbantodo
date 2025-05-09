@@ -15,16 +15,33 @@ export function stringToColor(string) {
 }
 
 export function stringAvatar(name) {
+  if (!name) {
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        bgcolor: '#808080', // grey color for undefined
         height: "30px",
         width: "30px",
         fontSize: "15px",
       },
-      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+      children: '?',
     };
   }
+
+  const nameParts = name.split(" ");
+  const children = nameParts.length > 1
+    ? `${nameParts[0][0]}${nameParts[1][0]}`
+    : nameParts[0][0];
+
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+      height: "30px",
+      width: "30px",
+      fontSize: "15px",
+    },
+    children: children,
+  };
+}
 
 // export const getUsername = (id) => {
 //  return users.find((user) => (id === user.id ? user.name : null))    

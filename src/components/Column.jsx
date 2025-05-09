@@ -9,8 +9,10 @@ import {
 } from "@mui/material";
 import TodoCard from "./TodoCard";
 import { useDispatch, useSelector } from "react-redux";
-import { addTask } from "../app/todoSlicers";
+import { addTask,moveTask } from "../app/todoSlicers";
 import { nanoid } from "@reduxjs/toolkit";
+import { useDrop } from "react-dnd";
+
 const Column = ({ name }) => {
   const [open, setOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
@@ -34,11 +36,21 @@ const Column = ({ name }) => {
     }
   };
 
+  const [, dropRef] = useDrop(() => ({
+    accept: "TASK",
+    drop: ({ task, currentColumn }) => {
+      if (currentColumn !== name) {
+        dispatch(moveTask({ from: currentColumn, to: name, task }));
+      }
+    },
+  }));
+
   return (
     <>
+     <div ref={dropRef} className=" h-auto">
       <Box
         sx={{
-          minHeight: "auto",
+          minHeight: "600px",
           minWidth: "290px",
           backgroundColor: "white",
           border: "1px solid #e0e0e0",
@@ -52,7 +64,9 @@ const Column = ({ name }) => {
         }}
       >
         <div className="flex items-center justify-between px-4 h-[10%]">
-          <h3 className="text-xl font-semibold text-black">{name}</h3>
+          <Typography variant="h6" className="text-xl font-semibold text-black">
+            {name}
+          </Typography>
           {isTodoColumn && (
             <Button
               sx={{
@@ -72,12 +86,16 @@ const Column = ({ name }) => {
             </Button>
           )}
         </div>
-
-        {tasks.map((task) => (
-          <TodoCard key={task.id} task={task} currentColumn={name} />
-        ))}
+        <div className="w-64 min-h-[400px] bg-white rounded shadow p-2">
+          {/* Render tasks inside the column */}
+          {tasks.map((task) => (
+            <TodoCard key={task.id} task={task} currentColumn={name} />
+          ))}
+        </div>
       </Box>
+      </div>
 
+      {/* Modal for adding new task */}
       <Modal
         open={open}
         onClose={handleClose}

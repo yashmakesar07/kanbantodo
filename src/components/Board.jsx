@@ -3,13 +3,9 @@ import {
   Button,
   Container,
   Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Select,
-  OutlinedInput,
+  MenuItem,
   Checkbox,
-  ListItemText,
   Chip,
   Typography,
   Menu,
@@ -28,7 +24,6 @@ const Board = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
-    console.log(deletedTasks);
     deletedTasks.forEach((task) => {
       const timeSinceDeleted = Date.now() - task.deletedAt;
       const timeRemaining = 10000 - timeSinceDeleted;
@@ -71,7 +66,7 @@ const Board = () => {
       }}
       disableGutters
     >
-      {/* Box for Button and Filter Dropdown with Checkboxes */}
+      {/* Filter Button and Column Selector */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2, gap: 2 }}>
         <Button variant="contained" onClick={handleClick}>
           Filter
@@ -81,11 +76,7 @@ const Board = () => {
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleClose}
-            sx={{
-              maxHeight: "300px",
-              overflow: "auto",
-            }
-            }
+          sx={{ maxHeight: "300px", overflow: "auto" }}
         >
           <Box sx={{ p: 2 }}>
             <Typography variant="h6">Select Columns</Typography>
@@ -93,7 +84,6 @@ const Board = () => {
               multiple
               value={visibleColumns}
               onChange={handleColumnChange}
-              input={<OutlinedInput label="Select Columns" />}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value) => (
@@ -105,7 +95,7 @@ const Board = () => {
               {columnNames.map((name) => (
                 <MenuItem key={name} value={name}>
                   <Checkbox checked={visibleColumns.includes(name)} />
-                  <ListItemText primary={name} />
+                  {name}
                 </MenuItem>
               ))}
             </Select>
@@ -113,9 +103,8 @@ const Board = () => {
         </Menu>
       </Box>
 
-      {/* Columns Section */}
+      {/* Render Columns */}
       <div className="flex flex-row h-[100%] gap-2">
-        {/* Render columns in the original order */}
         {columnNames
           .filter((column) => visibleColumns.includes(column))
           .map((name) => (

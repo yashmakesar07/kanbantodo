@@ -1,4 +1,4 @@
-import React, { Children, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardActions,
@@ -14,15 +14,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { asssigntaskTo, moveTask } from "../app/todoSlicers";
 import { stringAvatar } from "./utils";
 import { users } from "../app/utils";
+import { useDrag } from "react-dnd";
+
 const TodoCard = ({ task, currentColumn }) => {
+  const [{ isDragging }, dragRef] = useDrag(() => ({
+    type: "TASK",
+    item: { task, currentColumn },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
   const dispatch = useDispatch();
   const columns = useSelector((state) => Object.keys(state.todo.columns));
-  
+
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const [toCol, setTocol] = useState(currentColumn);
-  
-  
 
   const handleChange = (e) => {
     const newCol = e.target.value;
@@ -31,7 +38,6 @@ const TodoCard = ({ task, currentColumn }) => {
   };
 
   useEffect(() => {
-    console.log("todo task",task)
     if (currentColumn === "Deleted" && task.deletedAt) {
       const interval = setInterval(() => {
         const timeLeft = 10 - Math.floor((Date.now() - task.deletedAt) / 1000);
@@ -43,18 +49,18 @@ const TodoCard = ({ task, currentColumn }) => {
     }
   }, [currentColumn, task.deletedAt]);
 
-useEffect(()=>{
-
-},[dispatch])
-
   return (
+    <div
+      ref={dragRef}
+      style={{ opacity: isDragging ? 1 : 1, backgroundColor: "black" }}
+      // className="p-2 bg-gray-100 rounded mb-2"
+    >
     <Card
       sx={{
-        height: "auto",
         minWidth: 250,
         maxWidth: 250,
         margin: "8px 0",
-        backgroundColor: "#fff", //
+        backgroundColor: "#fff",
         borderRadius: "4px",
         boxShadow: "0 1px 3px black",
         flexShrink: 0,
@@ -64,7 +70,6 @@ useEffect(()=>{
         sx={{
           textWrap: "wrap",
           width: "100%",
-          height: "",
         }}
       >
         <Typography
@@ -114,35 +119,38 @@ useEffect(()=>{
                 </MenuItem>
               ))}
           </Select>
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: "relative" }}>
             <Tooltip title="Click to Assign Task user or unassign it">
-              <Avatar 
+              <Avatar
                 {...stringAvatar(task.assignedTo?.name)}
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               />
             </Tooltip>
-            
+
             {showUserDropdown && (
               <Select
                 open={showUserDropdown}
                 onClose={() => setShowUserDropdown(false)}
-                value={task.assignedTo?.id || ''}
+                value={task.assignedTo?.id || ""}
                 onChange={(e) => {
-                  console.log('Selected user:', e.target.value);
-                  dispatch(asssigntaskTo({ taskId: task.id, currentColumn: currentColumn, user: e.target.value }))
+                  const userId = e.target.value;
+                  const selectedUser = users.find(user => user.id === userId);
+                  dispatch(
+                    asssigntaskTo({ taskId: task.id, currentColumn: currentColumn, user: selectedUser })
+                  );
                   setShowUserDropdown(false);
                 }}
                 sx={{
-                  position: 'absolute',
-                  top: '100%',
+                  position: "absolute",
+                  top: "100%",
                   right: 0,
                   zIndex: 1000,
                   minWidth: 120,
                 }}
               >
                 {users.map((user) => (
-                  <MenuItem key={user.id} value={user}>
+                  <MenuItem key={user.id} value={user.id}>
                     {user.name}
                   </MenuItem>
                 ))}
@@ -152,6 +160,8 @@ useEffect(()=>{
         </CardActions>
       )}
     </Card>
+    </div>
+
   );
 };
 

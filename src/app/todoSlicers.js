@@ -18,7 +18,7 @@ const todoSlice = createSlice({
     addTask: (state, action) => {
       const { columnName, task } = action.payload;
       const randomUser = users[Math.floor(Math.random() * users.length)];
-      const newTask = { ...task, userId: randomUser.id };
+      const newTask = { ...task, assignedTo: randomUser};
       console.log(newTask);
       state.columns[columnName].push(newTask);
     },
@@ -46,9 +46,17 @@ const todoSlice = createSlice({
       );
       console.log("remove taks", state.columns["Deleted"]);
     },
+    asssigntaskTo : (state,action) =>{  
+      const {taskId , currentColumn, user}= action.payload;
+      const task = state.columns[currentColumn].find((task) => task.id === taskId);
+      if(task){
+        task.assignto = user;
+        console.log("task",task);
+      }
+    } 
   },
 });
 
-export const { addTask, moveTask, removeTask } = todoSlice.actions;
+export const { addTask, moveTask, removeTask, asssigntaskTo } = todoSlice.actions;
 
 export default todoSlice.reducer;

@@ -10,16 +10,16 @@ import {
   Avatar,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { moveTask } from "../app/todoSlicers";
+import { asssigntaskTo, moveTask } from "../app/todoSlicers";
 import { stringAvatar } from "./utils";
 import { users } from "../app/utils";
 const TodoCard = ({ task, currentColumn }) => {
   const dispatch = useDispatch();
   const columns = useSelector((state) => Object.keys(state.todo.columns));
-
+  
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const [toCol, setTocol] = useState(currentColumn);
-  const getUsername = (id) => users.find((user) => user.id === id)?.name || "Unknown User";
   
   
 
@@ -30,6 +30,7 @@ const TodoCard = ({ task, currentColumn }) => {
   };
 
   useEffect(() => {
+    console.log("todo task",task)
     if (currentColumn === "Deleted" && task.deletedAt) {
       const interval = setInterval(() => {
         const timeLeft = 10 - Math.floor((Date.now() - task.deletedAt) / 1000);
@@ -41,6 +42,10 @@ const TodoCard = ({ task, currentColumn }) => {
     }
   }, [currentColumn, task.deletedAt]);
 
+useEffect(()=>{
+
+},[asssigntaskTo])
+
   return (
     <Card
       sx={{
@@ -48,7 +53,7 @@ const TodoCard = ({ task, currentColumn }) => {
         minWidth: 250,
         maxWidth: 250,
         margin: "8px 0",
-        backgroundColor: "#fff",
+        backgroundColor: "#fff", //
         borderRadius: "4px",
         boxShadow: "0 1px 3px black",
         flexShrink: 0,
@@ -108,7 +113,38 @@ const TodoCard = ({ task, currentColumn }) => {
                 </MenuItem>
               ))}
           </Select>
-          <Avatar {...stringAvatar(getUsername(task.userId))} />
+          <div style={{ position: 'relative' }}>
+            <Avatar 
+              {...stringAvatar(task.assignedTo?.name)}
+              onClick={() => setShowUserDropdown(!showUserDropdown)}
+              style={{ cursor: 'pointer' }}
+            />
+            {showUserDropdown && (
+              <Select
+                open={showUserDropdown}
+                onClose={() => setShowUserDropdown(false)}
+                value={task.assignedTo?.id || ''}
+                onChange={(e) => {
+                  console.log('Selected user:', e.target.value);
+                  dispatch(asssigntaskTo({ taskId: task.id, currentColumn: currentColumn, user: e.target.value }))
+                  setShowUserDropdown(false);
+                }}
+                sx={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  zIndex: 1000,
+                  minWidth: 120,
+                }}
+              >
+                {users.map((user) => (
+                  <MenuItem key={user.id} value={user}>
+                    {user.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          </div>
         </CardActions>
       )}
     </Card>

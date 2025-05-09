@@ -26,6 +26,6 @@ export function stringAvatar(name) {
     };
   }
 
-export const getUsername = (id) => {
- return users.find((user) => (id === user.id ? user.name : null))    
-}
+// export const getUsername = (id) => {
+//  return users.find((user) => (id === user.id ? user.name : null))    
+// }

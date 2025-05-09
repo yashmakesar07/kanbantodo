@@ -1,4 +1,3 @@
-import { users } from "../app/utils";
 
 export function stringToColor(string) {
   let hash = 0;
@@ -14,16 +13,15 @@ export function stringToColor(string) {
   return color;
 }
 
-export function stringAvatar(name) {
-  console.log("stringAvatar", name);
-  
+export function stringAvatar(name, isSelected = false) {
   if (!name) {
     return {
       sx: {
-        bgcolor: '#808080', // grey color for undefined
-        height: "30px",
-        width: "30px",
+        bgcolor: '#808080',
+        height: "40px",
+        width: "40px",
         fontSize: "15px",
+        border: isSelected ? '10px solid black' : '10px solid transparent',
       },
       children: '?',
     };
@@ -39,11 +37,13 @@ export function stringAvatar(name) {
       bgcolor: stringToColor(name),
       height: "30px",
       width: "30px",
-      fontSize: "15px",
+      fontSize: "12px",
+      border: isSelected ? '5px solid royalblue' : '5px solid transparent',
     },
     children: children,
   };
 }
+
 
 // export const getUsername = (id) => {
 //  return users.find((user) => (id === user.id ? user.name : null))    

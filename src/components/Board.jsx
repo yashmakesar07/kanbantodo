@@ -15,16 +15,12 @@ import Column from "./Column";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
-import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
-import SaveIcon from "@mui/icons-material/Save";
-import PrintIcon from "@mui/icons-material/Print";
-import ShareIcon from "@mui/icons-material/Share";
 
 import { useSelector, useDispatch } from "react-redux";
 import { removeTask } from "../app/todoSlicers";
 import { users } from "../app/utils";
 import { stringAvatar } from "./utils";
-import { stringToColor } from "./utils";
+
 const Board = () => {
   const columns = useSelector((state) => state.todo.columns);
   const deletedTasks = useSelector((state) => state.todo.columns["Deleted"]);
@@ -33,15 +29,7 @@ const Board = () => {
   const columnNames = Object.keys(columns);
   const [visibleColumns, setVisibleColumns] = useState(columnNames);
   const [anchorEl, setAnchorEl] = useState(null);
-
-  const actions = [
-    { icon: <FileCopyIcon />, name: "Copy" },
-    { icon: <SaveIcon />, name: "Save" },
-    { icon: <PrintIcon />, name: "Print" },
-    { icon: <ShareIcon />, name: "Share" },
-  ];
-
-  const selectedUsers = [1, 3];
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
     deletedTasks.forEach((task) => {
@@ -64,7 +52,7 @@ const Board = () => {
         : [...prev, userId]
     );
   };
-  
+
   const handleColumnChange = (event) => {
     const {
       target: { value },
@@ -78,6 +66,18 @@ const Board = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const filterTasksByUsers = (tasks, selectedUsers) => {
+    if (selectedUsers.length === 0) return tasks;
+    let filteredTasks = tasks.filter((task) => {
+      if (!task.assignedTo) {
+        return selectedUsers.includes("unassigned");
+      }
+      return selectedUsers.includes(task.assignedTo.id);
+    });
+    console.log(filteredTasks);
+    return filteredTasks;
   };
 
   return (
@@ -94,7 +94,6 @@ const Board = () => {
       }}
       disableGutters
     >
-      {/* Filter Button and Column Selector */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2, gap: 2 }}>
         <Box>
           <SpeedDial
@@ -102,27 +101,28 @@ const Board = () => {
             icon={<SpeedDialIcon />}
             direction="left"
           >
-            {users.map((user) => (
-              <SpeedDialAction
-                key={user.id}
-                icon={
-                  <Avatar
-                    {...stringAvatar(user.name)}
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      border: selectedUsers.includes(user.id)
-                        ? "2px solid royalblue"
-                        : "2px solid transparent",
-                    }}
-                  />
-                }
-                tooltipTitle={user.name}
-                onClick={() => toggleUser(user.id)}
-              />
-            ))}
+            {users.map((user) => {
+              const isSelected = selectedUsers.includes(user.id);
+
+              return (
+                <SpeedDialAction
+                  key={user.id}
+                  icon={
+                    <Avatar
+                      {...stringAvatar(user.name, isSelected)} // pass isSelected here
+                    />
+                  }
+                  sx={{
+                    backgroundColor: "transparent",
+                  }}
+                  tooltipTitle={user.name}
+                  onClick={() => toggleUser(user.id)}
+                />
+              );
+            })}
           </SpeedDial>
         </Box>
+
         <Button variant="contained" onClick={handleClick}>
           Filter
         </Button>
@@ -163,7 +163,11 @@ const Board = () => {
         {columnNames
           .filter((column) => visibleColumns.includes(column))
           .map((name) => (
-            <Column key={name} name={name} tasks={columns[name]} />
+            <Column
+              key={name}
+              name={name}
+              tasks={filterTasksByUsers(columns[name], selectedUsers)}
+            />
           ))}
       </div>
     </Container>

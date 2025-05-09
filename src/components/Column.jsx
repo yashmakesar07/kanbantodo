@@ -14,6 +14,8 @@ import { nanoid } from "@reduxjs/toolkit";
 import { useDrop } from "react-dnd";
 
 const Column = ({ name }) => {
+
+  
   const [open, setOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
 

@@ -47,19 +47,25 @@ const Column = ({ name }) => {
 
   return (
     <>
-     <div ref={dropRef} className=" h-auto">
+     <div
+      ref={dropRef}
+      className="bg-amber-600 overflow-y-auto scroll-smooth"
+      style={{
+        scrollbarWidth: "none",       // Firefox
+        msOverflowStyle: "none",      // IE 10+
+      }}
+    >
       <Box
         sx={{
-          minHeight: "600px",
+          minHeight: "100%",
           minWidth: "290px",
           backgroundColor: "white",
           border: "1px solid #e0e0e0",
-          overflowX: "auto",
           borderRadius: 2,
           boxShadow: 1,
-          "&::-webkit-scrollbar": {
-            display: "none",
-          },
+            "&::-webkit-scrollbar": {
+              display: "none",          // Chrome, Safari
+            },
           padding: 2,
         }}
       >

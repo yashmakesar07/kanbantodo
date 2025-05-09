@@ -33,18 +33,6 @@ export const users = [
     id: nanoid(),
     name: "Alex Rodriguez",
   },
-  {
-    id: nanoid(),
-    name: "Sophia Patel",
-  },
-  {
-    id: nanoid(),
-    name: "James Wilson",
-  },
-  {
-    id: nanoid(),
-    name: "Olivia Martinez",
-  },
 ];
 
 export const loadState = () => {

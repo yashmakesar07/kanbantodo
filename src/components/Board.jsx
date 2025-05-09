@@ -9,11 +9,22 @@ import {
   Chip,
   Typography,
   Menu,
+  Avatar,
 } from "@mui/material";
 import Column from "./Column";
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
+import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
+import SaveIcon from "@mui/icons-material/Save";
+import PrintIcon from "@mui/icons-material/Print";
+import ShareIcon from "@mui/icons-material/Share";
+
 import { useSelector, useDispatch } from "react-redux";
 import { removeTask } from "../app/todoSlicers";
-
+import { users } from "../app/utils";
+import { stringAvatar } from "./utils";
+import { stringToColor } from "./utils";
 const Board = () => {
   const columns = useSelector((state) => state.todo.columns);
   const deletedTasks = useSelector((state) => state.todo.columns["Deleted"]);
@@ -22,6 +33,15 @@ const Board = () => {
   const columnNames = Object.keys(columns);
   const [visibleColumns, setVisibleColumns] = useState(columnNames);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const actions = [
+    { icon: <FileCopyIcon />, name: "Copy" },
+    { icon: <SaveIcon />, name: "Save" },
+    { icon: <PrintIcon />, name: "Print" },
+    { icon: <ShareIcon />, name: "Share" },
+  ];
+
+  const selectedUsers = [1, 3];
 
   useEffect(() => {
     deletedTasks.forEach((task) => {
@@ -37,6 +57,14 @@ const Board = () => {
     });
   }, [dispatch, deletedTasks]);
 
+  const toggleUser = (userId) => {
+    setSelectedUsers((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
+    );
+  };
+  
   const handleColumnChange = (event) => {
     const {
       target: { value },
@@ -61,13 +89,40 @@ const Board = () => {
         display: "flex",
         flexDirection: "column",
         gap: "5px",
-        overflowY: "auto",
+        overflow: "hidden",
         borderRadius: 2,
       }}
       disableGutters
     >
       {/* Filter Button and Column Selector */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2, gap: 2 }}>
+        <Box>
+          <SpeedDial
+            ariaLabel="Filter by User"
+            icon={<SpeedDialIcon />}
+            direction="left"
+          >
+            {users.map((user) => (
+              <SpeedDialAction
+                key={user.id}
+                icon={
+                  <Avatar
+                    {...stringAvatar(user.name)}
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      border: selectedUsers.includes(user.id)
+                        ? "2px solid royalblue"
+                        : "2px solid transparent",
+                    }}
+                  />
+                }
+                tooltipTitle={user.name}
+                onClick={() => toggleUser(user.id)}
+              />
+            ))}
+          </SpeedDial>
+        </Box>
         <Button variant="contained" onClick={handleClick}>
           Filter
         </Button>

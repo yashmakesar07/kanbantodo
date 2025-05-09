@@ -15,6 +15,8 @@ export function stringToColor(string) {
 }
 
 export function stringAvatar(name) {
+  console.log("stringAvatar", name);
+  
   if (!name) {
     return {
       sx: {

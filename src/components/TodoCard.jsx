@@ -53,7 +53,6 @@ const TodoCard = ({ task, currentColumn }) => {
     <div
       ref={dragRef}
       style={{ opacity: isDragging ? 1 : 1, backgroundColor: "black" }}
-      // className="p-2 bg-gray-100 rounded mb-2"
     >
     <Card
       sx={{
